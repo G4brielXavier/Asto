@@ -1,0 +1,24 @@
+Enum HashValue {
+    Info,
+    List
+}
+
+{
+    "node": "Input",
+    "prefix": "fnd",
+    "function": "hi",
+    "command": "ml mine --path --silent"
+    "desc": "Inicia a mineração",
+    "params": {
+        "--path": {
+            "short": "-p",
+            "type": "STRING",
+            "desc": "File Path."
+        },
+        "--silent": {
+            "short": "-s",
+            "type": "BOOL",
+            "desc": "Disable output logs after use commands."
+        }
+    }
+}

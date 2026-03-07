@@ -1,0 +1,7 @@
+> fnd hi --path --silent
+    / "Inicia a mineração."
+    : 0
+    {
+        --path STRING "File path."
+        --silent BOOL "Disable output logs after use command."
+    }
