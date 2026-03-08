@@ -1,10 +1,25 @@
 [package]
-name = "asto-dsl"
-version = "1.0.0"
+name = "asto"
+version = "0.1.1"
 edition = "2024"
+authors = ["Gabriel 'dotxav' Xavier <dotxavket@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/G4brielXavier/asto-dsl"
+keywords = ["dsl", "cli", "lexer", "parser"]
+categories = ["dsl", "asto", "cli", "algorithms", "language"]
 
 [dependencies]
+indexmap = { version = "2.0", features = ["serde"] }
 clap = { version = "4.5.60", features = ["derive"] }
 serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
+serde_json = { version = "1.0", features = ["preserve_order"] }
 ring = "0.17"
+
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
+

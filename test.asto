@@ -1,7 +1,13 @@
-> fnd hi --path --silent
-    / "Inicia a mineração."
+> fnd hi --name
+    / "Print 'Hi name'"
     : 0
     {
-        --path STRING "File path."
-        --silent BOOL "Disable output logs after use command."
+        --name STRING "Username"
+    }
+
+> fnd bye --name
+    / "Print 'Bye name'"
+    : 0
+    {
+        --name STRING "Username"
     }

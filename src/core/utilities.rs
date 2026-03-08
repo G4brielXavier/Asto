@@ -10,4 +10,8 @@ impl Utilities {
             valtype: ["STRING", "BOOL", "NUMBER"]
         }
     }
+
+
+
+
 }

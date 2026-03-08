@@ -1,10 +1,10 @@
 # ASTO
 
 ![Made with Rust](https://img.shields.io/badge/Made%20with-Rust-orange)
-![Crates.io](https://img.shields.io/crates/v/asto?color=orange)
-![GitHub Repo stars](https://img.shields.io/github/stars/G4brielXavier/kio?style=social)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/G4brielXavier/Asto)
-![GitHub all releases](https://img.shields.io/github/downloads/G4brielXavier/HovaForge/total)
+![Crates.io](https://img.shields.io/crates/v/asto-dsl?color=orange)
+![GitHub Repo stars](https://img.shields.io/github/stars/G4brielXavier/asto-dsl?style=social)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/G4brielXavier/asto-dsl)
+![GitHub all releases](https://img.shields.io/github/downloads/G4brielXavier/asto-dsl)
 ![Rust](https://img.shields.io/badge/Rust-3.11%2B-blue)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20MacOS-lightgrey)
 ![Issues](https://img.shields.io/badge/Issues-welcome-brightgreen)
@@ -17,16 +17,16 @@
 
 - [ASTO](#asto)
   - [Summary](#summary)
-  - [What is **Asto**?](#what-is-asto)
-  - [Why **Asto**?](#why-asto)
-  - [Who is **Asto** for?](#who-is-asto-for)
+  - [🤔 What is **Asto**?](#-what-is-asto)
+  - [🙂🫴 Why **Asto**?](#-why-asto)
+  - [🤨 Who is **Asto** for?](#-who-is-asto-for)
   - [The **Asto** Syntax](#the-asto-syntax)
   - [Params with **Asto**](#params-with-asto)
-  - [Instalation](#instalation)
+  - [📥 Instalation](#-instalation)
   - [Exporting **Asto** files](#exporting-asto-files)
     - [Export to JSON](#export-to-json)
     - [Export to MARKDOWN](#export-to-markdown)
-- [Friend CLI](#friend-cli)
+- [Project Name](#project-name)
   - [Commands](#commands)
     - [`fnd hi`](#fnd-hi)
     - [`fnd bye`](#fnd-bye)
@@ -35,7 +35,7 @@
 
 
 
-## What is **Asto**?
+## 🤔 What is **Asto**?
 
 **Asto** is a small but powerfull DSL designed to help CLI engineers organize, describe, and document command-line tools - clearly and efficiently.
 
@@ -49,7 +49,7 @@ Whether you're designing a new CLI or keeping track of a large one, **Asto** giv
 - Exportable documentation
 
 
-## Why **Asto**?
+## 🙂🫴 Why **Asto**?
 
 - Minimal syntax
 - Easy to read
@@ -64,7 +64,7 @@ Whether you're designing a new CLI or keeping track of a large one, **Asto** giv
 **Asto** is not a replacement for your CLI. <br>
 **Asto** is the language you use to structure it.
 
-## Who is **Asto** for?
+## 🤨 Who is **Asto** for?
 
 - CLI engineer
 - DevTools Creators
@@ -80,43 +80,66 @@ Using a fictional CLI called `friend-cli` (`fnd`).
 `friend_cli_commands.asto`
    
 ```asto
-> fnd hi
-/ Print "Hi"
-: 0
-$ Hi!
+> fnd hi --name
+  / "Print 'Hi NAME'"
+  : 0
+  $ Hi!
+  {
+    --name STRING "Username"
+  }
+  [
+    "Hi Gabriel!"
+  ]
 
-> fnd bye
-/ Print "Bye"
-: 0
-$ Bye!
+> fnd bye --name
+  / "Print 'Bye NAME'"
+  : 0
+  $ Bye!
+  {
+    --name STRING "Username"
+  }
+  [
+    "Bye Gabriel!"
+  ]
 ```
 
-| Symbol | Meaning                                                                       |
-| ------ | ----------------------------------------------------------------------------- |
-| `>`    | Input command                                                                 |
-| `/`    | Description                                                                   |
-| `:`    | Status / version of that command (0 = new, 1 = finished, 0.5 = experimental…) |
-| `$`    | Output example                                                                |
+| Symbol    | Meaning                                                                       |
+| --------- | ----------------------------------------------------------------------------- |
+| `>`       | Input command                                                                 |
+| `/ ""`    | Description                                                                   |
+| `--param` | It represent a parameter                                                      |
+| `:`       | Status / version of that command (0 = new, 1 = finished, 0.5 = experimental)  |
+| `$`       | Output example                                                                |
+| `{}`      | Param's informations                                                          |
+| `[]`      | Output logs. What happen when command is used                                 |
 
 ## Params with **Asto**
 
-To specify a param use: `{}`
+To use params, use `--`:
+
+```asto
+> fn hi --name
+```
+
+To specific param's type or what the param represents, use `{}`
 
 For example:
 
 ```asto
 > fn hi --name --lastname
-
-{
-    --name STRING First name
-    --lastname STRING Last name
-}
+  / "Print 'Hi name lastname'"
+  : 0
+  $ Hi Name Lastname!
+  {
+      --name string "First name"
+      --lastname string "Last name"
+  }
 ```
 
 The syntax is:
 
 ```asto
---param_name TYPE_VALUE : Description
+--param_name type "Description"
 ```
 
 
@@ -125,7 +148,7 @@ The syntax is:
 
 
 
-## Instalation
+## 📥 Instalation
 
 With **Cargo**
 
@@ -147,9 +170,7 @@ Asto vX.X.X
 
 Without **Cargo**
 
-Download the latest installer (`.exe`) from the releases page.
-
-
+Download the latest installer (`.exe`) from the releases page
 
 ## Exporting **Asto** files
 
@@ -173,18 +194,42 @@ It generates:
 
 ```json
 [
-    {
-        "input": "fnd hi",
-        "description": "Print \"Hi\"",
-        "status": 0,
-        "out": "Hi!"
-    },
-    {
-        "input": "fnd bye",
-        "description": "Print \"Bye\"",
-        "status": 0.5,
-        "out": "Bye!"
-    }
+  {
+    "node": "Input",
+    "command": "fnd hi --name",
+    "description": "Print 'Hi name'",
+    "prefix": "fnd",
+    "function": "hi",
+    "version": "0",
+    "params": [
+      "--name"
+    ],
+    "params_config": [
+      {
+        "name": "--name",
+        "typeval": "STRING",
+        "desc": "Username"
+      }
+    ]
+  },
+  {
+    "node": "Input",
+    "command": "fnd bye --name",
+    "description": "Print 'Bye name'",
+    "prefix": "fnd",
+    "function": "bye",
+    "version": "0",
+    "params": [
+      "--name"
+    ],
+    "params_config": [
+      {
+        "name": "--name",
+        "typeval": "STRING",
+        "desc": "Username"
+      }
+    ]
+  }
 ]
 ```
 
@@ -193,16 +238,10 @@ It generates:
 ### Export to MARKDOWN
 
 ```bash
-asto export friend_cli_commands.asto --md
+asto export friend_cli_commands.asto --markdown
 ```
 
-**Asto** will prompt for metadata:
-
 ```bash
-Title: Friend CLI
-Description: A CLI as your friend.
-Author: Gabriel Xavier
-
 ...Asto is reading -.-
 ...Asto is exporting to Markdown -.-
 
@@ -212,11 +251,11 @@ Markdown generated with successfully!
 Output (`outasto/friend_cli_commands.md`):
 
 
-# Friend CLI
+# Project Name
 
-By: Gabriel Xavier
+By: YOUR_NAME_HERE
 
-A CLI as your friend.
+Informations about your CLI...
 
 
 ## Commands
@@ -225,24 +264,24 @@ A CLI as your friend.
 
 Print "Hi"
 
-**Status:** No Implemented
+**Version:** New
 
 Output is:
 
 ```bash
-Hi!
+Hi Gabriel!
 ```
 
 ### `fnd bye`
 
 Print "Bye"
 
-**Status:** Deprecated
+**Version:** Experimental
 
 Output is:
 
 ```bash
-Bye!
+Bye Gabriel!
 ```
 
 ---

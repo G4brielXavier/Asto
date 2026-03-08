@@ -253,9 +253,9 @@ impl<'a> LexerF<'a> for Lexer<'a> {
 		let start_ln = self.ln;
 		let start_col = self.col;
 
-		let initialindex = self.index;
-
 		self.step();
+
+		let initialindex = self.index;
 
 		while !self.is_eof() && self.see() != b'\"' {
 			self.step();
@@ -263,7 +263,7 @@ impl<'a> LexerF<'a> for Lexer<'a> {
 
 		self.step();
 
-		let bytes_ident = &self.code[initialindex..self.index];
+		let bytes_ident = &self.code[initialindex..self.index-1];
 
 		Ok(Token {
 			value: bytes_ident,
@@ -338,10 +338,10 @@ impl<'a> LexerF<'a> for Lexer<'a> {
 				AstoStructure::Param
 			},
 			b'{' => {
-				AstoStructure::Param
+				AstoStructure::ParamBox
 			},
 			b'}' => {
-				AstoStructure::Param
+				AstoStructure::ParamBox
 			},
 			_ => {
 				AstoStructure::Info
@@ -383,7 +383,7 @@ impl<'a> LexerF<'a> for Lexer<'a> {
 
 		let initialindex = self.index;
 
-		while !self.is_eof() && self.see().is_ascii_digit() {
+		while !self.is_eof() && (self.see().is_ascii_digit() || self.see() == b'.') {
 			self.step();
 		}
 
@@ -408,13 +408,13 @@ impl<'a> LexerF<'a> for Lexer<'a> {
 
 		self.step();
 
-		while !self.is_eof() && self.see() != b'\x20' {
+		while !self.is_eof() && self.see() != b'\x20' && self.see() != b'\n' && self.see() != b'\r' {
 			self.step();
 		}
 
 		Ok(Token {
 			value: &self.code[initindex..self.index],
-			typeval: AstoStructure::Version,
+			typeval: AstoStructure::Param,
 			start_ln: start_ln,
 			start_col: start_col,
 			end_ln: self.ln,
