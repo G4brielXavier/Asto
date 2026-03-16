@@ -100,7 +100,7 @@ Using a fictional CLI called `friend-cli` (`fnd`).
 | `>`       | Input command                                                                        |
 | `/ ""`    | Description                                                                          |
 | `--param` | It represent a parameter                                                             |
-| `:`       | Status / version of that command (0 = draft, 1 = experimental, 0.5 = deprecated...)  |
+| `:`       | Command's status (`new`, `depr`, `expm`, `stable`)  |
 | `{}`      | Param's informations                                                                 |
 
 ## Params with **Asto**

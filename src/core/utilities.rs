@@ -9,7 +9,7 @@ impl Utilities {
         Self {
             symbols: b">/:{}-\"",
             valtype: ["str", "bool", "int", "float"],
-            valstatus: ["new", "depre", "expm", "stable"]
+            valstatus: ["new", "depr", "expm", "stable"]
         }
     }
 }
