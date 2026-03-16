@@ -472,7 +472,7 @@ pub fn matches_command(command: &Commands) {
                                         if key == "version" {
                                             match value {
                                                 InputAlias::Text(s) => {
-                                                    println!(" │    └── version: {} [ {} ]", s, get_version_string(&s));
+                                                    println!(" │    └── version: {}", get_version_string(&s));
                                                 },
                                                 _ => println!()
                                             }
