@@ -82,14 +82,14 @@ Using a fictional CLI called `friend-cli` (`fnd`).
 ```asto
 > fnd hi --name
   / "Print 'Hi NAME'"
-  : 0
+  : new
   {
     --name STRING "Username"
   }
 
 > fnd bye --name
   / "Print 'Bye NAME'"
-  : 0
+  : new
   {
     --name STRING "Username"
   }
@@ -118,7 +118,7 @@ For example:
 ```asto
 > fn hi --name --lastname
   / "Print 'Hi name lastname'"
-  : 0
+  : new
   {
       --name string "First name"
       --lastname string "Last name"
