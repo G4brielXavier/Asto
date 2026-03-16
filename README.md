@@ -83,35 +83,25 @@ Using a fictional CLI called `friend-cli` (`fnd`).
 > fnd hi --name
   / "Print 'Hi NAME'"
   : 0
-  $ Hi!
   {
     --name STRING "Username"
   }
-  [
-    "Hi Gabriel!"
-  ]
 
 > fnd bye --name
   / "Print 'Bye NAME'"
   : 0
-  $ Bye!
   {
     --name STRING "Username"
   }
-  [
-    "Bye Gabriel!"
-  ]
 ```
 
-| Symbol    | Meaning                                                                       |
-| --------- | ----------------------------------------------------------------------------- |
-| `>`       | Input command                                                                 |
-| `/ ""`    | Description                                                                   |
-| `--param` | It represent a parameter                                                      |
-| `:`       | Status / version of that command (0 = new, 1 = finished, 0.5 = experimental)  |
-| `$`       | Output example                                                                |
-| `{}`      | Param's informations                                                          |
-| `[]`      | Output logs. What happen when command is used                                 |
+| Symbol    | Meaning                                                                              |
+| --------- | ------------------------------------------------------------------------------------ |
+| `>`       | Input command                                                                        |
+| `/ ""`    | Description                                                                          |
+| `--param` | It represent a parameter                                                             |
+| `:`       | Status / version of that command (0 = draft, 1 = experimental, 0.5 = deprecated...)  |
+| `{}`      | Param's informations                                                                 |
 
 ## Params with **Asto**
 
@@ -129,7 +119,6 @@ For example:
 > fn hi --name --lastname
   / "Print 'Hi name lastname'"
   : 0
-  $ Hi Name Lastname!
   {
       --name string "First name"
       --lastname string "Last name"
@@ -165,7 +154,7 @@ asto --version
 Output:
 
 ```bash
-Asto vX.X.X
+asto vX.X.X
 ```
 
 Without **Cargo**
@@ -190,7 +179,7 @@ JSON generated with successfully!
 
 It generates:
 
-`outasto/friend_cli_command.json`:
+`friend_cli_command.json`:
 
 ```json
 [
@@ -248,7 +237,7 @@ asto export friend_cli_commands.asto --markdown
 Markdown generated with successfully!
 ```
 
-Output (`outasto/friend_cli_commands.md`):
+Output (`friend_cli_commands.md`):
 
 
 # Project Name

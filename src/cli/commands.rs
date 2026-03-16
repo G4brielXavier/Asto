@@ -24,6 +24,30 @@ pub enum Commands {
         #[arg(short, long, value_name = "SILENT")]
         silent: bool
 
+    },
+
+    #[command(about="Makes a analize over Asto file and verify and returns informations about Command's Version")]
+    Version {
+
+        #[arg(value_name = "PATH", value_hint = clap::ValueHint::FilePath)]
+        path: Option<PathBuf>,
+    
+    },
+
+    #[command(about="Makes a analize over Asto file and verify if each command has what is necessary")]
+    Status {
+
+        #[arg(value_name = "PATH", value_hint = clap::ValueHint::FilePath)]
+        path: Option<PathBuf>,
+    
+    },    
+
+    #[command(about="Makes a Tree with all commands and your informations.")]
+    Tree {
+
+        #[arg(value_name = "PATH", value_hint = clap::ValueHint::FilePath)]
+        path: Option<PathBuf>,
+    
     }
 
 }

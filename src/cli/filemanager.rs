@@ -1,11 +1,11 @@
-use std::fs;
+use std::{fs, str::from_utf8};
 use std::io::Write;
 use std::fs::File;
 use std::path::PathBuf;
 
 use indexmap::IndexMap;
 
-use crate::core::nodetrees::InputAlias;
+use crate::core::nodetrees::{InputAlias, get_version_string};
 
 
 // Verify if the path exists
@@ -68,6 +68,7 @@ pub fn write_markdown(content: Vec<IndexMap<String, InputAlias>>) -> String {
         for (key, value) in cont.iter() {
 
             match &*key.as_str() {
+
                 "command" => {
                     let mut val = match value {
                         InputAlias::Text(s) => s.trim_matches('"'),
@@ -97,32 +98,12 @@ pub fn write_markdown(content: Vec<IndexMap<String, InputAlias>>) -> String {
                 },
 
                 "version" => {
-                    let mut val = match value {
+                    let val = match value {
                         InputAlias::Text(s) => s.trim_matches('"'),
                         _ => "default"
                     };
 
-                    if val == "" {
-                        val = "No Implemented"
-                    } else {
-                        match val {
-                            "0" => {
-                                val = "New"
-                            },
-                            "0.5" => {
-                                val = "Experimental"
-                            },
-                            "1" => {
-                                val = "Solid"
-                            }
-
-                            &_ => {
-                                val = "No Implemented"
-                            }
-                        }
-                    }
-
-                    let data = &format!("**Version**: {} \n\n\n", val);
+                    let data = &format!("**Status**: {} \n\n\n", get_version_string(val));
                     markdown_content.push_str(data)
                 },
 
@@ -135,7 +116,11 @@ pub fn write_markdown(content: Vec<IndexMap<String, InputAlias>>) -> String {
                     };
 
                     for param in val.iter() {
-                        markdown_content.push_str(&format!("`{}` `{}` *{}* <br>\n", param.name, param.typeval, param.desc))
+                        let bsp = *param.name.as_bytes().get(2).expect("not SHORT");
+                        let to_b = &[bsp];
+                        let short_param = from_utf8(to_b).expect("no UTF8");
+
+                        markdown_content.push_str(&format!("- *{}* or *-{}* (`{}`): {} <br>\n", param.name, short_param, param.typeval, param.desc))
                     }
 
                     markdown_content.push_str(&format!("<br>\n\n"))

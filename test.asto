@@ -1,13 +1,4 @@
-> fnd hi --name
-    / "Print 'Hi name'"
-    : 0
-    {
-        --name STRING "Username"
-    }
-
-> fnd bye --name
-    / "Print 'Bye name'"
-    : 0
-    {
-        --name STRING "Username"
-    }
+> Prefix Function
+    / ""
+    : new
+    []

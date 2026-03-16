@@ -1,13 +1,18 @@
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum AstoStructure {
+
     Input,
-    Output,
     Description,
-    Info,
     Version,
+    Type,
+    Info,
+
     Param,
     ParamBox,
-    Type,
+    // OutputLine,
+    // OutputBox,
+    
     Tab,
     NewLine
+    
 }

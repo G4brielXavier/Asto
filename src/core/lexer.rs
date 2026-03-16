@@ -22,10 +22,11 @@ pub trait LexerF<'a> {
 	// Tokenizer Extras
 	fn tok_string(&mut self) -> Result<Token<'a>, String>;
 	fn tok_symbol(&mut self) -> Result<Token<'a>, String>;
-	fn tok_number(&mut self) -> Result<Token<'a>, String>;
 	
 	fn tok_info(&mut self, utils: &Utilities) -> Result<Token<'a>, String>;
 	fn tok_param(&mut self) -> Result<Token<'a>, String>;
+	// fn tok_output(&mut self) -> Result<Token<'a>, String>;
+
 
 	fn tok_comment(&mut self) -> Result<(), String>;
 }
@@ -61,11 +62,12 @@ impl<'a> LexerF<'a> for Lexer<'a> {
 
 			let byte = self.see();
 			
-
 			if byte == b'\r' {
 				self.step();
 				continue;
 			}
+
+
 
 
 			else if byte == b'\n' {
@@ -87,6 +89,8 @@ impl<'a> LexerF<'a> for Lexer<'a> {
 				continue;
 
 			}
+
+
 
 
 			else if byte == b'\t' {
@@ -189,6 +193,22 @@ impl<'a> LexerF<'a> for Lexer<'a> {
 
 
 
+			// Capture output line ($)
+			// else if byte == b'$' {
+			// 	match self.tok_output() {
+			// 		Ok(t) => {
+			// 			tokens.push(t);
+			// 			continue;
+			// 		},
+			// 		Err(e) => {
+			// 			println!("{}", e);	
+			// 			std::process::exit(1)
+			// 		}
+			// 	}
+			// }
+
+
+
 			// Capture specific symbols
 			else if utils.symbols.contains(&byte) {
 				match self.tok_symbol() {
@@ -203,26 +223,8 @@ impl<'a> LexerF<'a> for Lexer<'a> {
 				};
 			}
 
-
-
-			// Capture numbers
-			else if byte.is_ascii_digit() {
-				match self.tok_number() {
-					Ok(t) => {
-						tokens.push(t);
-						continue;
-					},
-					Err(e) => {
-						println!("{}", e);
-						std::process::exit(1)
-					}
-				};
-			}
-			
-
-
-			// Capture && comments
-			else if byte == b'&' && self.next() == b'&' {
+			// Capture ## comments
+			else if byte == b'#' && self.next() == b'#' {
 				match self.tok_comment() {
 					Ok(_t) => { continue; },
 					Err(e) => {
@@ -231,9 +233,6 @@ impl<'a> LexerF<'a> for Lexer<'a> {
 					}
 				};
 			}
-
-
-
 
 			self.step();
 			// println!("Unexpected Character: {}", byte as char);
@@ -298,6 +297,8 @@ impl<'a> LexerF<'a> for Lexer<'a> {
 
 		let toktype = if utils.valtype.contains(&value) {
 			AstoStructure::Type
+		} else if utils.valstatus.contains(&value) {
+			AstoStructure::Version
 		} else {
 			AstoStructure::Info
 		};
@@ -331,9 +332,9 @@ impl<'a> LexerF<'a> for Lexer<'a> {
 			b':' => {
 				AstoStructure::Version
 			},
-			b'$' => {
-				AstoStructure::Output
-			},
+			// b'$' => {
+			// 	AstoStructure::OutputLine
+			// },
 			b'-' => {
 				AstoStructure::Param
 			},
@@ -343,6 +344,12 @@ impl<'a> LexerF<'a> for Lexer<'a> {
 			b'}' => {
 				AstoStructure::ParamBox
 			},
+			// b'[' => {
+			// 	AstoStructure::OutputBox
+			// },
+			// b']' => {
+			// 	AstoStructure::OutputBox
+			// },
 			_ => {
 				AstoStructure::Info
 			}
@@ -376,29 +383,6 @@ impl<'a> LexerF<'a> for Lexer<'a> {
 	}
 
 
-	fn tok_number(&mut self) -> Result<Token<'a>, String> {
-		
-		let start_ln = self.ln;
-		let start_col = self.col;
-
-		let initialindex = self.index;
-
-		while !self.is_eof() && (self.see().is_ascii_digit() || self.see() == b'.') {
-			self.step();
-		}
-
-		Ok(Token {
-			value: &self.code[initialindex..self.index],
-			typeval: AstoStructure::Version,
-			start_ln: start_ln,
-			start_col: start_col,
-			end_ln: self.ln,
-			end_col: self.col
-		})
-
-	}
-
-
 	fn tok_param(&mut self) -> Result<Token<'a>, String> {
 		
 		let start_ln = self.ln;
@@ -423,6 +407,37 @@ impl<'a> LexerF<'a> for Lexer<'a> {
 
 	}
 
+
+	// fn tok_output(&mut self) -> Result<Token<'a>, String> {
+
+	// 	let start_ln = self.ln;
+	// 	let start_col = self.col;
+
+		
+	// 	// consume '"'
+	// 	self.step();
+	// 	self.step();
+
+	// 	let initindex = self.index;
+
+	// 	while !self.is_eof() && self.see() != b'"' {
+	// 		self.step();
+	// 	}
+
+	// 	let value = &self.code[initindex..self.index];
+
+	// 	self.step();
+
+	// 	Ok(Token {
+	// 		value: value,
+	// 		typeval: AstoStructure::OutputLine,
+	// 		start_ln: start_ln,
+	// 		start_col: start_col,
+	// 		end_ln: self.ln,
+	// 		end_col: self.col   
+	// 	})
+
+	// }
 
 	// Scanner Functions
 

@@ -1,5 +1,6 @@
 
 use indexmap::IndexMap;
+use core::error;
 use std::mem::{self, discriminant};
 use std::str::from_utf8;
 
@@ -8,6 +9,8 @@ use crate::core::nodetrees::{
     InputStruct, to_input, InputAlias, ParamStruct
 };
 use crate::core::types::AstoStructure;
+use crate::core::errors::AstoError;
+use crate::core::utilities::Utilities;
 
 
 type Node = IndexMap<String, InputAlias>;
@@ -18,14 +21,14 @@ pub trait ParserF<'a> {
 
     fn new() -> Self;
 
-    fn see(&self, toks: &Vec<Token<'a>>) -> Result<Token<'a>, ()>;
-    fn _next(&self, toks: &Vec<Token<'a>>) -> Result<Token<'a>, ()>; 
+    fn see(&self, toks: &Vec<Token<'a>>) -> Result<Token<'a>, AstoError>;
+    fn _next(&self, toks: &Vec<Token<'a>>) -> Result<Token<'a>, AstoError>; 
     fn eat(&mut self, toks: &Vec<Token<'a>>) -> Option<Token<'a>>;
-    fn expected(&mut self, type_expc: AstoStructure, toks: &Vec<Token<'a>>) -> Result<Token<'a>, String>;
-    fn get(&mut self, type_expc: AstoStructure, toks: &Vec<Token<'a>>) -> &'a str;
+    fn expected(&mut self, type_expc: AstoStructure, toks: &Vec<Token<'a>>) -> Result<Token<'a>, AstoError>;
+    fn get(&mut self, type_expc: AstoStructure, toks: &Vec<Token<'a>>) -> Result<&'a str, AstoError>;
     fn is_enum_next(&mut self, toks: &Vec<Token<'a>>, enum_test: AstoStructure) -> bool;
 
-    fn parse_primary(&mut self, toks: &Vec<Token>) -> Node;
+    fn parse_primary(&mut self, toks: &Vec<Token>) -> Result<Node, AstoError>;
     fn parseator(&mut self, toks: Vec<Token>) -> Vec<Node>;
 
 }
@@ -43,20 +46,20 @@ impl<'a> ParserF<'a> for Parser {
     fn new() -> Self { Self { idx: 0 } }
 
 
-    fn see(&self, toks: &Vec<Token<'a>>) -> Result<Token<'a>, ()> {
+    fn see(&self, toks: &Vec<Token<'a>>) -> Result<Token<'a>, AstoError> {
     if self.idx < toks.len() {
         Ok(toks[self.idx])
     } else {
-        Err(())
+        Err(AstoError::SyntaxError("EOF".to_string()))
     }
 }
 
 
-    fn _next(&self, toks: &Vec<Token<'a>>) -> Result<Token<'a>, ()> {
+    fn _next(&self, toks: &Vec<Token<'a>>) -> Result<Token<'a>, AstoError> {
         if self.idx + 1 < toks.len() {
             Ok(toks[self.idx + 1])
         } else {
-            Err(())
+            Err(AstoError::SyntaxError("EOF".to_string()))
         }
     }
 
@@ -71,7 +74,7 @@ impl<'a> ParserF<'a> for Parser {
     }
 
 
-    fn expected(&mut self, type_expc: AstoStructure, toks: &Vec<Token<'a>>) -> Result<Token<'a>, String> {
+    fn expected(&mut self, type_expc: AstoStructure, toks: &Vec<Token<'a>>) -> Result<Token<'a>, AstoError> {
 
         match self.see(&toks) {
             Ok(b) => {
@@ -80,41 +83,44 @@ impl<'a> ParserF<'a> for Parser {
                     if let Some(tok) = self.eat(toks) {
                         Ok(tok)
                     } else {
-                        Err("Asto Parser Error - Occurred an error while Eat".to_string())
+                        Err(AstoError::SyntaxError("Occurred an error while consume token.".to_string()))
                     }
 
                 } else {
-                    let msg = format!("Asto Parser Error - The Type '{:?}' (AstoStructure) is different of '{:?}'", b.typeval, type_expc);
-                    Err(msg)
+                    let msg = format!("The Type \"{:?}\" is different of \"{:?}\". Unexpected syntax.", b.typeval, type_expc);
+                    Err(AstoError::SyntaxError(msg))
                 }
             },
             Err(_) => {
-                Err("Asto Parser Error - Occurred an error while Match".to_string())
+                Err(AstoError::SyntaxError("Occurred an error while see tokens.".to_string()))
             }
         }
 
     }
 
 
-    fn get(&mut self, type_expc: AstoStructure, toks: &Vec<Token<'a>>) -> &'a str {
+    fn get(&mut self, type_expc: AstoStructure, toks: &Vec<Token<'a>>) -> Result<&'a str, AstoError> {
 
-        let token = match self.expected(type_expc, &toks) {
-            Ok(b) => b,
-            Err(e) => {
-                println!("{}", e);
-                std::process::exit(1);
+        let token = self.expected(type_expc, &toks);
+
+        match token {
+            Ok(t) => {
+                let value: &str = match from_utf8(&t.value) {
+                    Ok(b) => b,
+                    Err(e) => {
+                        println!("{}", e);
+                        return Err(AstoError::SyntaxError("UTF8".to_string()))
+                    }
+                };
+
+                Ok(value)
             }
-        };
-
-        let value: &str = match from_utf8(&token.value) {
-            Ok(b) => b,
             Err(e) => {
-                println!("{:?}", e);
-                std::process::exit(1);
+                Err(e)
             }
-        };
+        }
 
-        value
+
 
     }
 
@@ -132,20 +138,15 @@ impl<'a> ParserF<'a> for Parser {
     }
 
 
+    fn parse_primary(&mut self, toks: &Vec<Token>) -> Result<Node, AstoError> {
 
-    fn parse_primary(&mut self, toks: &Vec<Token>) -> Node {
+        let utils: Utilities = Utilities::new();
 
         while self.is_enum_next(&toks, AstoStructure::NewLine) {
             self.eat(&toks);
         }
 
-        let tok: Token = match self.eat(&toks) {
-            Some(t) => t,
-            None => { 
-                eprintln!("Asto CLI Error - Ocurred an Error in Parser");
-                std::process::exit(1)
-            }
-        };
+        let tok: Token = self.eat(&toks).expect("Ocurred an Error in Parser");
 
         // println!("{:?} - {:?}", from_utf8(&toks[self.idx].value), self.see(&toks).unwrap().typeval);
 
@@ -156,25 +157,46 @@ impl<'a> ParserF<'a> for Parser {
             //  : 0
             AstoStructure::Input => {
 
-                let mut prefx_val: String = "".to_string();
-                let mut cmd_val: String = "".to_string();
-                let mut command_val: String = "".to_string();
+                let mut prefx_val: String = Default::default();
+                let mut cmd_val: String = Default::default();
+                let mut command_val: String = Default::default();
                 let mut params: ParamVec = Vec::new();
-                let mut desc_val: String = "".to_string();
-                let mut vers_val: String = "".to_string();
+                let mut desc_val: String = Default::default();
+                let mut vers_val: String = Default::default();
                 let mut params_config: Vec<ParamStruct> = Vec::new();
+                // let mut output_logs: Vec<String> = Vec::new();
  
+                let control: bool = false;
+                if control  {
+                    println!("{:?}", prefx_val);
+                    println!("{:?}", cmd_val);
+                    println!("{:?}", command_val);
+                }
+                
 
                 // Get "cmd"
-                prefx_val = self.get(AstoStructure::Info, &toks).to_string();
+                match self.get(AstoStructure::Info, &toks) {
+                    Ok(e) => prefx_val = e.to_string(),
+                    Err(e) => return Err(e)
+                }
                 
                 // Get "command"
-                cmd_val = self.get(AstoStructure::Info, &toks).to_string();
+                match self.get(AstoStructure::Info, &toks) {
+                    Ok(e) => cmd_val = e.to_string(),
+                    Err(e) => return Err(e)
+                }
                 
+
                 // Get all --params until \n
                 while self.is_enum_next(&toks, AstoStructure::Param) {
-                    // println!("{:?}", from_utf8(&toks[self.idx].value));
-                    params.push(self.get(AstoStructure::Param, &toks).to_string());
+
+                    let params_getted = self.get(AstoStructure::Param, &toks);
+                    
+                    match params_getted {
+                        Ok(p) => params.push(p.to_string()),
+                        Err(e) => return Err(e)
+                    }
+
                 }
 
                 // Get \n
@@ -198,7 +220,11 @@ impl<'a> ParserF<'a> for Parser {
                         self.eat(&toks);
 
                         // Get Description
-                        desc_val = self.get(AstoStructure::Description, &toks).to_string();
+                        match self.get(AstoStructure::Description, &toks) {
+                            Ok(e) => desc_val = e.to_string(),
+                            Err(e) => return Err(e)
+                        }
+
                     }
 
                 }
@@ -221,7 +247,10 @@ impl<'a> ParserF<'a> for Parser {
                         self.eat(&toks);
 
                         // Get Version
-                        vers_val = self.get(AstoStructure::Version, &toks).to_string();
+                        match self.get(AstoStructure::Version, &toks) {
+                            Ok(e) => vers_val = e.to_string(),
+                            Err(e) => return Err(e) 
+                        }
                     }
 
                 } 
@@ -274,15 +303,36 @@ impl<'a> ParserF<'a> for Parser {
                                 std::process::exit(1)
                             }   
 
-                            let name = self.get(AstoStructure::Param, &toks).to_string();
-                            let typeval = self.get(AstoStructure::Type, &toks).to_string();
-                            let desc = self.get(AstoStructure::Description, &toks).to_string();
+                            let name = self.get(AstoStructure::Param, &toks);
+
+                            match name {
+                                Ok(_) => {}
+                                Err(e) => return Err(e)
+                            }
+
+                            let typeval = self.get(AstoStructure::Type, &toks);
+                            
+                            match typeval {
+                                Ok(_) => {}
+                                Err(e) => return Err(e)
+                            }
+
+                            let desc = self.get(AstoStructure::Description, &toks);
+
+                            match desc {
+                                Ok(e) => {
+                                    if !utils.valtype.contains(&e) {
+                                        return Err(AstoError::KeywordError(format!("\"{}\" not exists as type value.", e)))
+                                    }
+                                }
+                                Err(e) => return Err(e)
+                            }
 
                             params_config.push(
                                 ParamStruct {
-                                    name: name,
-                                    typeval: typeval,
-                                    desc: desc
+                                    name: name.expect("Error").to_string(),
+                                    typeval: typeval.expect("Error").to_string(),
+                                    desc: desc.expect("Error").to_string()
                                 }
                             );                       
 
@@ -294,8 +344,7 @@ impl<'a> ParserF<'a> for Parser {
                         if self.is_enum_next(&toks, AstoStructure::ParamBox) {
                             self.eat(&toks);
                         } else {
-                            println!("Asto Syntax Error - Expected '}}' to close ParamBox");
-                            std::process::exit(1)
+                            return Err(AstoError::SyntaxError("Expected '}}' to close ParamBox".to_string()))
                         } 
 
                     }
@@ -303,6 +352,76 @@ impl<'a> ParserF<'a> for Parser {
                 } 
                 
 
+
+                // Get \n
+                if self.is_enum_next(&toks, AstoStructure::NewLine) {
+                    self.eat(&toks);
+                }
+
+
+                // Get [ ] (if has)
+                // if self.is_enum_next(&toks, AstoStructure::Tab) {
+                //     // Eat TAB
+                //     self.eat(&toks);
+
+                //     if self.is_enum_next(&toks, AstoStructure::OutputBox) {
+                //         // Eat "{"
+                //         self.eat(&toks);
+
+
+                //         // Eat or Store everything that is inside a ParamBox
+                //         while !self.is_enum_next(&toks, AstoStructure::OutputBox) {
+                            
+                //             // Get \n
+                //             if self.is_enum_next(&toks, AstoStructure::NewLine) {
+                //                 self.eat(&toks);
+                //             } else {
+                //                 println!("Asto Syntax Error - Expected 'NewLine' ln {} : {}", self.see(&toks).unwrap().start_ln, self.see(&toks).unwrap().start_col);
+                //                 std::process::exit(1)
+                //             }
+
+
+                //             // Get \t
+                //             if self.is_enum_next(&toks, AstoStructure::Tab) {
+                //                 self.eat(&toks);
+                //             } else {
+                //                 println!("Asto Syntax Error - Expected 'Tab' inside ({{}})ln {} : {}", self.see(&toks).unwrap().start_ln, self.see(&toks).unwrap().start_col);
+                //                 std::process::exit(1)
+                //             }   
+
+                //             if self.is_enum_next(&toks, AstoStructure::OutputBox) {
+                //                 break
+                //             }
+
+                //             // Get \t
+                //             if self.is_enum_next(&toks, AstoStructure::Tab) {
+                //                 self.eat(&toks);
+                //             } else {
+                //                 println!("oi Asto Syntax Error - Expected 'Tab' inside ({{}}). ln {} : {}", self.see(&toks).unwrap().start_ln, self.see(&toks).unwrap().start_col);
+                //                 std::process::exit(1)
+                //             }   
+
+                //             let outputline = self.get(AstoStructure::OutputLine, &toks).to_string();
+                            
+                //             output_logs.push(outputline);
+
+                //             continue
+
+                //         }
+
+                //         // Eat "]"
+                //         if self.is_enum_next(&toks, AstoStructure::OutputBox) {
+                //             self.eat(&toks);
+                //         } else {
+                //             println!("Asto Syntax Error - Expected ']' to close OutputBox. ln {} : {}", self.see(&toks).unwrap().start_ln, self.see(&toks).unwrap().start_col);
+                //             std::process::exit(1)
+                //         } 
+
+                //     }
+
+                // } 
+                
+                
 
                 command_val = format!("{} {}", prefx_val, cmd_val);
                 
@@ -317,15 +436,17 @@ impl<'a> ParserF<'a> for Parser {
                     desc_val, 
                     vers_val, 
                     params,
-                    params_config
+                    params_config,
+                    // output_logs
                 );
 
                 
-                to_input(input_arch)
+                Ok(to_input(input_arch))
 
             },
 
             _ => {
+                println!("{:?}", tok);
                 println!("Asto Parser Error - The first structure must be a INPUT ('>').");
                 println!("Asto Tip - Starts with '> pre command_name' to test.");
                 std::process::exit(1)
@@ -348,7 +469,15 @@ impl<'a> ParserF<'a> for Parser {
 
         while self.idx < toks.len() {
             let node = self.parse_primary(&toks);
-            tree.push(node)
+            match node {
+                Ok(e) => {
+                    tree.push(e)
+                }
+                Err(e) => {
+                    eprintln!("{}", e);
+                    std::process::exit(1)
+                }
+            }
         }
 
         tree

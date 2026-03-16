@@ -1,6 +1,8 @@
 use indexmap::IndexMap;
-
 use serde::{Deserialize, Serialize};
+
+
+
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -9,9 +11,6 @@ pub enum InputAlias {
     List(Vec<String>),
     ListParam(Vec<ParamStruct>)
 }
-
-
-
 
 
 
@@ -26,6 +25,9 @@ pub struct InputStruct {
     
     #[serde(rename = "param_config")]
     pub params_config: Vec<ParamStruct>,
+
+    // #[serde(rename = "output_logs")]
+    // pub output_logs: Vec<String>,
     
     pub params: Vec<String>
     
@@ -40,12 +42,11 @@ impl InputStruct {
             func: func,
             version: version,
             params: params,
-            params_config: params_config
+            params_config: params_config,
+            // output_logs: output_logs
         }
     }
 }
-
-
 
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -56,10 +57,20 @@ pub struct ParamStruct {
 }
 
 
+// FUNCTIONS 
 
 
-
-
+pub fn get_version_string(version: &str) -> String {
+    match version {
+        "new" => String::from("New"),
+        "depre" => String::from("Deprecated"),
+        "expm" => String::from("Experimental"),
+        "stable" => String::from("Stable"),
+        _ => {
+            String::from("No Implemented")
+        }
+    }
+}
 
 
 
@@ -77,6 +88,7 @@ pub fn to_input(input: InputStruct) -> IndexMap<String, InputAlias> {
     structure.insert("version".to_string(), InputAlias::Text(input.version));
     structure.insert("params".to_string(), InputAlias::List(input.params));
     structure.insert("params_config".to_string(), InputAlias::ListParam(input.params_config));
+    // structure.insert("output_logs".to_string(), InputAlias::List(input.output_logs));
 
     structure
 }
