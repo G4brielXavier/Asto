@@ -23,8 +23,9 @@
   - [🤨 Who is **Asto** for?](#-who-is-asto-for)
   - [The **Asto** Syntax](#the-asto-syntax)
   - [Params with **Asto**](#params-with-asto)
-  - [📥 Instalation](#-instalation)
-  - [Exporting **Asto** files](#exporting-asto-files)
+  - [📥 installation](#-installation)
+  - [🧩 VS Code Extension](#-vs-code-extension)
+  - [Exporting `.asto` files](#exporting-asto-files)
     - [Export to JSON](#export-to-json)
     - [Export to MARKDOWN](#export-to-markdown)
 - [Project Name](#project-name)
@@ -44,7 +45,7 @@ Whether you're designing a new CLI or keeping track of a large one, **Asto** giv
 
 - Inputs
 - Descriptions
-- Output behaviour
+- Output behavior
 - Status/version
 - Params/Actions
 - Exportable documentation
@@ -100,9 +101,9 @@ Using a fictional CLI called `friend-cli` (`fnd`).
 | --------- | ------------------------------------------------------------------------------------ |
 | `>`       | Input command                                                                        |
 | `/ ""`    | Description                                                                          |
-| `--param` | It represent a parameter                                                             |
+| `--param` | it represents a parameter                                                             |
 | `:`       | Command's status (`new`, `depr`, `expm`, `stable`)  |
-| `{}`      | Param's informations                                                                 |
+| `{}`      | Param info                                                                 |
 
 ## Params with **Asto**
 
@@ -138,7 +139,7 @@ The syntax is:
 
 
 
-## 📥 Instalation
+## 📥 installation
 
 With **Cargo**
 
@@ -162,7 +163,12 @@ Without **Cargo**
 
 Download the latest installer (`.exe`) from the releases page
 
-## Exporting **Asto** files
+## 🧩 VS Code Extension
+
+Get syntax highlighting for your .asto files: *gabrielxavier.Asto-Plugin* (Search with this in vscode).
+
+
+## Exporting `.asto` files
 
 ### Export to JSON
 
@@ -173,9 +179,7 @@ asto export friend_cli_command.asto --json
 Output:
 
 ```bash
-...Asto is exporting to JSON -.-
-
-JSON generated with successfully!
+Asto CLI - "friend_cli_command.json" exported with successfully!
 ```
 
 It generates:
@@ -190,7 +194,7 @@ It generates:
     "description": "Print 'Hi name'",
     "prefix": "fnd",
     "function": "hi",
-    "version": "0",
+    "version": "new",
     "params": [
       "--name"
     ],
@@ -208,7 +212,7 @@ It generates:
     "description": "Print 'Bye name'",
     "prefix": "fnd",
     "function": "bye",
-    "version": "0",
+    "version": "new",
     "params": [
       "--name"
     ],
@@ -232,10 +236,7 @@ asto export friend_cli_commands.asto --markdown
 ```
 
 ```bash
-...Asto is reading -.-
-...Asto is exporting to Markdown -.-
-
-Markdown generated with successfully!
+Asto CLI - "friend_cli_command.md" exported with successfully!
 ```
 
 Output (`friend_cli_commands.md`):
