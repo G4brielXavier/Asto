@@ -62,10 +62,10 @@ pub struct ParamStruct {
 
 pub fn get_version_string(version: &str) -> String {
     match version {
-        "new" => String::from("New"),
-        "depre" => String::from("Deprecated"),
-        "expm" => String::from("Experimental"),
-        "stable" => String::from("Stable"),
+        "new" => String::from("🟡 New"),
+        "depre" => String::from("🔴 Deprecated"),
+        "expm" => String::from("🔵 Experimental"),
+        "stable" => String::from("🟢 Stable"),
         _ => {
             String::from("No Implemented")
         }

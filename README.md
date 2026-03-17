@@ -1,10 +1,11 @@
 # ASTO
 
+![Build Status](https://github.com/G4brielXavier/Asto/actions/workflows/rust_ci.yml/badge.svg)
 ![Made with Rust](https://img.shields.io/badge/Made%20with-Rust-orange)
-![Crates.io](https://img.shields.io/crates/v/asto-dsl?color=orange)
-![GitHub Repo stars](https://img.shields.io/github/stars/G4brielXavier/asto-dsl?style=social)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/G4brielXavier/asto-dsl)
-![GitHub all releases](https://img.shields.io/github/downloads/G4brielXavier/asto-dsl)
+![Crates.io](https://img.shields.io/crates/v/Asto?color=orange)
+![GitHub Repo stars](https://img.shields.io/github/stars/G4brielXavier/Asto?style=social)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/G4brielXavier/Asto)
+![GitHub all releases](https://img.shields.io/github/downloads/G4brielXavier/Asto)
 ![Rust](https://img.shields.io/badge/Rust-3.11%2B-blue)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20MacOS-lightgrey)
 ![Issues](https://img.shields.io/badge/Issues-welcome-brightgreen)

@@ -67,11 +67,7 @@ pub fn matches_command(command: &Commands) {
                             if *json {
                                 
                                 if let Some(cont) = read_file(&filepath) {
-
-                                    if !*silent {
-                                        println!("...Asto is being exported to JSON -.-");
-                                    }
-
+                                    
                                     let asto_content = read_asto_to_json(cont);
                                     
                                     let name = filepath.file_stem().and_then(|n| n.to_str()).unwrap_or("default_asto_file.json");
