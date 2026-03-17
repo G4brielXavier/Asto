@@ -1,7 +1,9 @@
 .vscode/
 target/
 info.txt
-test.asto
-test.md
-TODO.md
 test.json
+mycli.asto
+mycli.json
+mycli.md
+
+tests/

@@ -1,6 +1,5 @@
 
 use indexmap::IndexMap;
-use core::error;
 use std::mem::{self, discriminant};
 use std::str::from_utf8;
 
@@ -313,18 +312,18 @@ impl<'a> ParserF<'a> for Parser {
                             let typeval = self.get(AstoStructure::Type, &toks);
                             
                             match typeval {
-                                Ok(_) => {}
+                                Ok(e) => {
+                                    if !utils.valtype.contains(&e) {
+                                        return Err(AstoError::KeywordError(format!("\"{}\" not exists as type value.", e)))
+                                    }
+                                }
                                 Err(e) => return Err(e)
                             }
 
                             let desc = self.get(AstoStructure::Description, &toks);
 
                             match desc {
-                                Ok(e) => {
-                                    if !utils.valtype.contains(&e) {
-                                        return Err(AstoError::KeywordError(format!("\"{}\" not exists as type value.", e)))
-                                    }
-                                }
+                                Ok(_) => {}
                                 Err(e) => return Err(e)
                             }
 
