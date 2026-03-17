@@ -107,7 +107,6 @@ impl<'a> ParserF<'a> for Parser {
                 let value: &str = match from_utf8(&t.value) {
                     Ok(b) => b,
                     Err(e) => {
-                        println!("{}", e);
                         return Err(AstoError::SyntaxError("UTF8".to_string()))
                     }
                 };
@@ -147,13 +146,8 @@ impl<'a> ParserF<'a> for Parser {
 
         let tok: Token = self.eat(&toks).expect("Ocurred an Error in Parser");
 
-        // println!("{:?} - {:?}", from_utf8(&toks[self.idx].value), self.see(&toks).unwrap().typeval);
-
         match tok.typeval {
 
-            // > cmd command --param1 --param2
-            //  / "It does..."
-            //  : 0
             AstoStructure::Input => {
 
                 let mut prefx_val: String = Default::default();
