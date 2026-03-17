@@ -30,8 +30,10 @@
     - [Export to MARKDOWN](#export-to-markdown)
 - [Project Name](#project-name)
   - [Commands](#commands)
-    - [`fnd hi`](#fnd-hi)
-    - [`fnd bye`](#fnd-bye)
+    - [`fnd hi --name`](#fnd-hi---name)
+    - [Params](#params)
+    - [`fnd bye --name`](#fnd-bye---name)
+    - [Params](#params-1)
   - [Contribute](#contribute)
   - [License](#license)
 
@@ -242,38 +244,46 @@ Asto CLI - "friend_cli_command.md" exported with successfully!
 Output (`friend_cli_commands.md`):
 
 
-# Project Name
+# Project Name 
 
-By: YOUR_NAME_HERE
+**By:** YOUR_NAME_HERE<br>
 
-Informations about your CLI...
+Informations about project...
 
 
 ## Commands
 
-### `fnd hi`
 
-Print "Hi"
+### `fnd hi --name`
 
-**Version:** New
+Say hi for someone 
 
-Output is:
 
-```bash
-Hi Gabriel!
-```
+**Status**: 🟡 New 
 
-### `fnd bye`
 
-Print "Bye"
+### Params 
 
-**Version:** Experimental
+- *--name* or *-n* (`str`): Username <br>
+<br>
 
-Output is:
 
-```bash
-Bye Gabriel!
-```
+
+### `fnd bye --name`
+
+Say bye for someone 
+
+
+**Status**: 🟡 New 
+
+
+### Params 
+
+- *--name* or *-n* (`str`): Username <br>
+<br>
+
+
+
 
 ---
 
