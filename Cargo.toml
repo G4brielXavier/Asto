@@ -1,13 +1,18 @@
 [package]
 name = "asto"
 version = "0.1.0"
-edition = "2024"
+description = "Asto is a minimalist DSL for documenting CLI tools, built from the ground up in Rust."
 authors = ["Gabriel 'dotxav' Xavier <dotxavket@gmail.com>"]
+edition = "2021"
 license = "MIT"
-readme = "README.md"
 repository = "https://github.com/G4brielXavier/asto-dsl"
-keywords = ["dsl", "cli", "lexer", "parser"]
-categories = ["dsl", "asto", "cli", "algorithms", "language"]
+readme = "README.md"
+keywords = ["dsl", "cli", "rust", "parser", "documentation"]
+categories = ["command-line-utilities", "development-tools"]
+
+[[bin]]
+name = "asto"
+path = "src/main.rs"
 
 [dependencies]
 indexmap = { version = "2.0", features = ["serde"] }
