@@ -1,6 +1,6 @@
 [package]
 name = "asto"
-version = "0.1.0"
+version = "0.1.1"
 description = "Asto is a minimalist DSL for documenting CLI tools, built from the ground up in Rust."
 authors = ["Gabriel 'dotxav' Xavier <dotxavket@gmail.com>"]
 edition = "2021"

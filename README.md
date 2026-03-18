@@ -234,7 +234,7 @@ It generates:
 ### Export to MARKDOWN
 
 ```bash
-asto export friend_cli_commands.asto --markdown
+asto export friend_cli_commands.asto --md
 ```
 
 ```bash
